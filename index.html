@@ -1,0 +1,50 @@
+ <!DOCTYPE html>
+ <html lang = "de">
+     <head>
+     <meta charset = "UTF-8">
+     <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+     <title> PLZ Validator </title>
+     <style> #tooltip {
+    display: none;
+    position: absolute;
+    background - color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z - index: 10;
+}
+ </style>
+ </head>
+ <body>
+ <h1> Postleitzahl Validator </h1>
+ <strong>Hinweis:</strong>
+  <p>Bitte gültige deutsche PLZ (5 Ziffern) eingeben, nur dann erscheint das Turnier in der Kartendarstellung. Nach Eingabe der fünften Ziffer erscheint der zugehörige Ort, falls eine gültige PLZ eingegeben wurde, andernfalls eine Fehlermeldung.</p>
+ <input type = "text" id = "plz" placeholder = "Geben Sie die PLZ ein" maxlength = "5" /  >
+     <div id = "tooltip" />
+     <script> const plzInput = document.getElementById('plz');
+const tooltip = document.getElementById('tooltip');
+plzInput.addEventListener('input', function () {
+    if (plzInput.value.length === 5) {
+        fetch(`https://api.zippopotam.us/de/${plzInput.value}`).then(response => {
+            if (!response.ok) {
+                throw new Error('Keine gültige Postleitzahl');
+            }
+            return response.json();
+        }).then(data => {
+            const placeName = data.places[0]['place name'];
+            showTooltip(`Ort: ${placeName}`);
+        }).catch(error => {
+            showTooltip('Keine gültige Postleitzahl');
+        });
+    } else {
+        tooltip.style.display = 'none';
+    }
+});
+function showTooltip(message) {
+    tooltip.textContent = message;
+    tooltip.style.display = 'block';
+    tooltip.style.left = plzInput.getBoundingClientRect().left + 'px';
+    tooltip.style.top = (plzInput.getBoundingClientRect().bottom + window.scrollY) + 'px';
+}
+ </script >
+ </body >
+</html >
